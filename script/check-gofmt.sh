@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo $BASH_SOURCE
-source "$(dirname "$BASH_SOURCE")/.precommit"
+source "$(dirname "$BASH_SOURCE")/.check"
 
 IFS=$'\n'
 files=( $(validate_diff --name-only -- '*.go' | grep -v '^vendor/\|autogen' || true) )

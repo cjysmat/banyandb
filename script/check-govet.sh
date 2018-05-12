@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$BASH_SOURCE")/.precommit"
+source "$(dirname "$BASH_SOURCE")/.check"
 
 IFS=$'\n'
 files=( $(validate_diff --diff-filter=ACMR --name-only -- '*.go' | grep -v '^vendor/' || true) )
