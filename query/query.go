@@ -15,28 +15,34 @@
  * limitations under the License.
  */
 
-package config
+package query
 
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
+import (
+	"github.com/hanahmily/banyandb/config"
+	"net/http"
+	"github.com/hanahmily/banyandb/log"
+	"github.com/vektah/gqlgen/handler"
+	"github.com/hanahmily/banyandb/query/graph"
+	"fmt"
+)
+
+type Query struct {
+	svr *http.Server
 }
 
-type ServerConfig struct {
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
+func (q *Query) Start(config *config.ServerConfig) error {
+	addr := fmt.Sprintf("%s:%d", config.QueryAddr, config.QueryPort)
+	log.Infof("Query is listening on %s", addr)
+	q.svr = &http.Server{Addr: addr}
+	http.Handle("/", handler.Playground("Query", "/query"))
+	http.Handle("/query", handler.GraphQL(graph.MakeExecutableSchema(&graph.Query{})))
+	go func() {
+		log.Error(q.svr.ListenAndServe())
+	}()
+	return nil
 }
 
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-		},
-	}
-}
-
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
-	}
+func (q *Query) Stop() error {
+	log.Info("Query is shutting down")
+	return q.svr.Shutdown(nil)
 }

@@ -15,28 +15,8 @@
  * limitations under the License.
  */
 
-package config
+package entry
 
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
-}
+func NewGrpcEntry(addr *string, port int) error {
 
-type ServerConfig struct {
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
-}
-
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-		},
-	}
-}
-
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
-	}
 }

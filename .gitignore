@@ -18,4 +18,5 @@
 *.iml
 *.log
 .DS_Store
-/vendor
+/vendor*
+*_gen.go

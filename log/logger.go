@@ -37,8 +37,12 @@ func SetLevel(level logrus.Level) {
 	logrus.SetLevel(level)
 }
 
-func Info(log string) {
-	logger.Info(log)
+func Info(args ...interface{}) {
+	logger.Info(args)
+}
+
+func Error(args ...interface{}) {
+	logger.Error(args)
 }
 
 func Debugf(format string, args ...interface{}) {

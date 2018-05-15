@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package entry;
+
+// Interface exported by the server.
+service LogService {
+
+    rpc WriteLog(stream Data) returns (stream Summary) {}
+
+}
+
+message DBMeta {
+
+}
+
+message Item {
+    string name = 1;
+    ItemType type = 2;
+    enum ItemType {
+        INT = 0;
+        STRING = 1;
+        BOOL = 2;
+        BYTES = 3;
+    }
+}
+
+message Result {
+
+}
+
+message Data {
+
+}
+
+message Summary {
+
+}
+
+message Q {
+
+}

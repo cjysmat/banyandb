@@ -15,28 +15,5 @@
  * limitations under the License.
  */
 
-package config
-
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
-}
-
-type ServerConfig struct {
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
-}
-
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-		},
-	}
-}
-
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
-	}
-}
+//go:generate gorunpkg github.com/vektah/gqlgen -schema schema.graphql -out ../resolvers_gen.go -package graph
+package schema

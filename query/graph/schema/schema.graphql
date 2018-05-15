@@ -1,0 +1,37 @@
+type LogItem {
+  name: String!
+  value: String!
+}
+
+enum ItemType {
+  STRING
+  INT32
+  INT64
+  FLOAT
+  DOUBLE
+  BOOL
+  BYTES
+}
+
+input LogMetaItem {
+  name: String!
+  type: ItemType
+}
+
+input LogMetaInput {
+  name: String!
+  logItems: [LogMetaItem!]
+}
+
+type Result {
+  errorCode: Int!
+  msg: String
+}
+
+type Query {
+  log: [LogItem!]!
+}
+
+type Mutation {
+  createLogEntity(logMeta: LogMetaInput!): Result!
+}

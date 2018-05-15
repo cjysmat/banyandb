@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package config
+package graph
 
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
+import (
+	"context"
+	"github.com/hanahmily/banyandb/query/graph/schema"
+	"github.com/hanahmily/banyandb/log"
+)
+
+type Query struct {
 }
 
-type ServerConfig struct {
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
+func (l *Query) Mutation_createLogEntity(ctx context.Context, logMeta schema.LogMetaInput) (schema.Result, error) {
+	log.Info(logMeta)
+	return schema.Result{}, nil
 }
 
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-		},
-	}
-}
-
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
-	}
+func (l *Query) Query_log(ctx context.Context) ([]schema.LogItem, error) {
+	return []schema.LogItem{}, nil
 }

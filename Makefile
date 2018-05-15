@@ -15,12 +15,14 @@ BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 GITHUB_USERNAME=hanahmily
 SOURCE_DIR=${GOPATH}/src/github.com/${GITHUB_USERNAME}/${BINARY}
 BUILD_DIR=${SOURCE_DIR}/cmd
+GRAPH_DIR=${SOURCE_DIR}/query/graph
+SCHEMA_DIR=${GRAPH_DIR}/schema
 
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
 # Build the project
-all: clean check test linux darwin windows
+all: clean schema check test linux darwin windows
 
 install: clean linux darwin windows
 
@@ -53,13 +55,21 @@ fmt:
 
 lint:
 	cd ${SOURCE_DIR}; \
-	golint -set_exit_status $$(go list ./... | grep -v '/vendor/')
+	golint $$(go list ./... | grep -v '/vendor/')
 
 vet:
 	cd ${SOURCE_DIR}; \
 	go vet $$(go list ./... | grep -v /vendor/)
 
+dep: dep ensure -v
+
+schema:
+	dep
+	go generate ./...
+
 clean:
 	-rm -f ${BUILD_DIR}/${BINARY}-*
+	-rm -f ${GRAPH_DIR}/*_gen.go
+	-rm -f ${SCHEMA_DIR}/*_gen.go
 
-.PHONY: linux darwin windows test vet fmt lint clean
+.PHONY: linux darwin windows test vet fmt lint clean dep schema

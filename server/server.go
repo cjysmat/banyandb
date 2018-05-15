@@ -22,12 +22,19 @@ import (
 	"github.com/hanahmily/banyandb/config"
 	"github.com/hanahmily/banyandb/log"
 	"os"
+	"github.com/hanahmily/banyandb/query"
 )
+
+type Endpoint interface {
+	Start(config *config.ServerConfig) error
+	Stop() error
+}
 
 type Server struct {
 	signals  chan os.Signal
 	stopChan chan bool
 	config   *config.ServerConfig
+	endpoints []Endpoint
 }
 
 func NewServer(config *config.ServerConfig) *Server {
@@ -35,7 +42,28 @@ func NewServer(config *config.ServerConfig) *Server {
 	server.signals = make(chan os.Signal, 1)
 	server.stopChan = make(chan bool, 1)
 	server.config = config
+	server.endpoints = append(server.endpoints, &query.Query{})
+
 	return server
+}
+
+func (s *Server) setupEndpoints() error {
+	for _, v := range s.endpoints {
+		err := v.Start(s.config)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Server) tearDownEndpoints() {
+	for _, v := range s.endpoints {
+		err := v.Stop()
+		if err != nil {
+			log.Error(err)
+		}
+	}
 }
 
 func (s *Server) Start(ctx context.Context) {
@@ -45,6 +73,11 @@ func (s *Server) Start(ctx context.Context) {
 		log.Info("Stopping server gracefully")
 		s.Stop()
 	}()
+	err := s.setupEndpoints()
+	if err != nil {
+		log.Error(err)
+		s.Stop()
+	}
 }
 
 func (s *Server) Wait() {
@@ -53,5 +86,6 @@ func (s *Server) Wait() {
 
 func (s *Server) Stop() {
 	defer log.Info("Server stopped")
+	s.tearDownEndpoints()
 	s.stopChan <- true
 }
