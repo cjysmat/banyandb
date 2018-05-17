@@ -36,7 +36,6 @@ type Server struct {
 	stopChan  chan bool
 	config    *config.ServerConfig
 	endpoints []Endpoint
-	storage   *storage.Storage
 }
 
 func NewServer(config *config.ServerConfig, storage *storage.Storage) *Server {
@@ -44,8 +43,7 @@ func NewServer(config *config.ServerConfig, storage *storage.Storage) *Server {
 	server.signals = make(chan os.Signal, 1)
 	server.stopChan = make(chan bool, 1)
 	server.config = config
-	server.storage = storage
-	server.endpoints = append(server.endpoints, &query.Query{})
+	server.endpoints = append(server.endpoints, &query.Query{S: storage})
 	return server
 }
 

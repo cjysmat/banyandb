@@ -28,8 +28,8 @@ import (
 )
 
 type Query struct {
-	svr     *http.Server
-	storage *storage.Storage
+	svr *http.Server
+	S   *storage.Storage
 }
 
 func (q *Query) Start(config *config.ServerConfig) error {
@@ -37,7 +37,7 @@ func (q *Query) Start(config *config.ServerConfig) error {
 	log.Infof("Query is listening on %s", addr)
 	q.svr = &http.Server{Addr: addr}
 	http.Handle("/", handler.Playground("Query", "/query"))
-	http.Handle("/query", handler.GraphQL(graph.MakeExecutableSchema(&graph.Query{S: q.storage})))
+	http.Handle("/query", handler.GraphQL(graph.MakeExecutableSchema(&graph.Query{S: q.S})))
 	go func() {
 		log.Error(q.svr.ListenAndServe())
 	}()

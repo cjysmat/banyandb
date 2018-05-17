@@ -18,7 +18,6 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dgraph-io/badger"
 	"github.com/hanahmily/banyandb/log"
@@ -69,8 +68,9 @@ func (s *Storage) Close() error {
 	return s.metaDb.Close()
 }
 
-func (s *Storage) CreateLogMeta(name string) (logMeta *LogMeta, err error) {
-	return &LogMeta{}, errors.New("create")
+func (s *Storage) CreateLogMeta(name string) *LogMeta {
+	db := s.metaDb
+	return &LogMeta{entityName: name, txn: db.NewTransaction(true)}
 }
 
 func (s *Storage) openMeta() error {
@@ -87,12 +87,20 @@ func (s *Storage) openMeta() error {
 }
 
 type LogMeta struct {
-	itemName string
-	itemType int32
+	entityName string
+	txn        *badger.Txn
 }
 
 func (lm *LogMeta) AddLogMetaItem(itemName string, itemType string) error {
-	return nil
+	return lm.txn.Set(metaKey(lm.entityName, itemName), []byte(itemType))
+}
+
+func (lm *LogMeta) Finish(err error) error {
+	if err != nil {
+		lm.txn.Discard()
+		return err
+	}
+	return lm.txn.Commit(nil)
 }
 
 func createDirIfNotExist(dir string) error {
@@ -105,4 +113,8 @@ func createDirIfNotExist(dir string) error {
 		return err
 	}
 	return nil
+}
+
+func metaKey(name string, item string) []byte {
+	return []byte(fmt.Sprintf("%s.%s", name, item))
 }

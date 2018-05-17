@@ -31,17 +31,16 @@ type Query struct {
 
 func (l *Query) Mutation_createLogEntity(ctx context.Context, logMeta schema.LogMetaInput) (string, error) {
 	log.Infof("Creating Log Metadata: %v", logMeta)
-	meta, err := l.S.CreateLogMeta(logMeta.Name)
-	if err != nil {
-		return "", err
-	}
+	meta := l.S.CreateLogMeta(logMeta.Name)
+	var err error = nil
 	for _, v := range logMeta.LogItems {
 		err = meta.AddLogMetaItem(v.Name, v.Type.String())
 		if err != nil {
-			return "", err
+			break
 		}
 	}
-	return fmt.Sprintf("Create Log entity %s successfully", logMeta.Name), nil
+	err = meta.Finish(err)
+	return fmt.Sprintf("Create Log entity %s successfully", logMeta.Name), err
 }
 
 func (l *Query) Query_log(ctx context.Context) ([]schema.LogItem, error) {
