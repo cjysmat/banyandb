@@ -23,6 +23,7 @@ import (
 	"github.com/hanahmily/banyandb/config"
 	"github.com/hanahmily/banyandb/log"
 	"github.com/hanahmily/banyandb/server"
+	bStorage "github.com/hanahmily/banyandb/storage"
 	fmtLog "log"
 	"os"
 	"os/signal"
@@ -50,6 +51,11 @@ func main() {
 }
 
 func runCmd(globalConfig *config.BanyanConfig) {
+	storage, err := bStorage.NewStorage(globalConfig.Dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	storage.Open()
 	newCtx, cancel := context.WithCancel(context.Background())
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
@@ -60,9 +66,10 @@ func runCmd(globalConfig *config.BanyanConfig) {
 		}
 	}()
 
-	svr := server.NewServer(globalConfig.Server)
+	svr := server.NewServer(globalConfig.Server, storage)
 	svr.Start(newCtx)
 	svr.Wait()
+	storage.Close()
 	log.Info("Shut down")
 	log.Exit()
 }

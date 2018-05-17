@@ -24,7 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
-required = ["github.com/vektah/gqlgen"]
+required = ["github.com/vektah/gqlgen", "github.com/vektah/gqlgen/neelance/introspection"]
 
 [prune]
   go-tests = true
@@ -37,3 +37,7 @@ required = ["github.com/vektah/gqlgen"]
 [[constraint]]
   name = "google.golang.org/grpc"
   version = "1.12.0"
+
+[[constraint]]
+  name = "github.com/dgraph-io/badger"
+  version = "1.5.0"

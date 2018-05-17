@@ -19,6 +19,7 @@ package config
 
 type BanyanConfig struct {
 	Server *ServerConfig `description:"Server configuration"`
+	Dir    string        `description:"Storage directory"`
 }
 
 type ServerConfig struct {
@@ -32,6 +33,7 @@ func NewBanyanConfig() *BanyanConfig {
 			QueryAddr: "",
 			QueryPort: 9122,
 		},
+		Dir: "/tmp/banyandb",
 	}
 }
 

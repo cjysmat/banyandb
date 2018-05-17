@@ -18,16 +18,18 @@
 package query
 
 import (
-	"github.com/hanahmily/banyandb/config"
-	"net/http"
-	"github.com/hanahmily/banyandb/log"
-	"github.com/vektah/gqlgen/handler"
-	"github.com/hanahmily/banyandb/query/graph"
 	"fmt"
+	"github.com/hanahmily/banyandb/config"
+	"github.com/hanahmily/banyandb/log"
+	"github.com/hanahmily/banyandb/query/graph"
+	"github.com/hanahmily/banyandb/storage"
+	"github.com/vektah/gqlgen/handler"
+	"net/http"
 )
 
 type Query struct {
-	svr *http.Server
+	svr     *http.Server
+	storage *storage.Storage
 }
 
 func (q *Query) Start(config *config.ServerConfig) error {
@@ -35,7 +37,7 @@ func (q *Query) Start(config *config.ServerConfig) error {
 	log.Infof("Query is listening on %s", addr)
 	q.svr = &http.Server{Addr: addr}
 	http.Handle("/", handler.Playground("Query", "/query"))
-	http.Handle("/query", handler.GraphQL(graph.MakeExecutableSchema(&graph.Query{})))
+	http.Handle("/query", handler.GraphQL(graph.MakeExecutableSchema(&graph.Query{S: q.storage})))
 	go func() {
 		log.Error(q.svr.ListenAndServe())
 	}()

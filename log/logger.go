@@ -45,6 +45,10 @@ func Error(args ...interface{}) {
 	logger.Error(args)
 }
 
+func Fatal(args ...interface{}) {
+	logger.Fatal(args)
+}
+
 func Debugf(format string, args ...interface{}) {
 	logger.Debugf(format, args...)
 }

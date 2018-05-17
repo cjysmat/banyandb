@@ -61,10 +61,10 @@ vet:
 	cd ${SOURCE_DIR}; \
 	go vet $$(go list ./... | grep -v /vendor/)
 
-dep: dep ensure -v
+vendor:
+	dep ensure -v
 
-schema:
-	dep
+schema: vendor
 	go generate ./...
 
 clean:
@@ -72,4 +72,4 @@ clean:
 	-rm -f ${GRAPH_DIR}/*_gen.go
 	-rm -f ${SCHEMA_DIR}/*_gen.go
 
-.PHONY: linux darwin windows test vet fmt lint clean dep schema
+.PHONY: linux darwin windows test vet fmt lint clean vendor schema

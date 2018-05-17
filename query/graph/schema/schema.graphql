@@ -15,17 +15,12 @@ enum ItemType {
 
 input LogMetaItem {
   name: String!
-  type: ItemType
+  type: ItemType!
 }
 
 input LogMetaInput {
   name: String!
-  logItems: [LogMetaItem!]
-}
-
-type Result {
-  errorCode: Int!
-  msg: String
+  logItems: [LogMetaItem!]!
 }
 
 type Query {
@@ -33,5 +28,5 @@ type Query {
 }
 
 type Mutation {
-  createLogEntity(logMeta: LogMetaInput!): Result!
+  createLogEntity(logMeta: LogMetaInput!): String!
 }

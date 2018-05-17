@@ -6,6 +6,8 @@ IFS=$'\n'
 files=( $(validate_diff --name-only -- '*.go' | grep -v '^vendor/\|autogen' || true) )
 unset IFS
 
+echo $files
+
 errors=()
 for f in "${files[@]}"; do
 	# we use "git show" here to validate that what's committed passes go vet

@@ -19,16 +19,29 @@ package graph
 
 import (
 	"context"
-	"github.com/hanahmily/banyandb/query/graph/schema"
+	"fmt"
 	"github.com/hanahmily/banyandb/log"
+	"github.com/hanahmily/banyandb/query/graph/schema"
+	"github.com/hanahmily/banyandb/storage"
 )
 
 type Query struct {
+	S *storage.Storage
 }
 
-func (l *Query) Mutation_createLogEntity(ctx context.Context, logMeta schema.LogMetaInput) (schema.Result, error) {
-	log.Info(logMeta)
-	return schema.Result{}, nil
+func (l *Query) Mutation_createLogEntity(ctx context.Context, logMeta schema.LogMetaInput) (string, error) {
+	log.Infof("Creating Log Metadata: %v", logMeta)
+	meta, err := l.S.CreateLogMeta(logMeta.Name)
+	if err != nil {
+		return "", err
+	}
+	for _, v := range logMeta.LogItems {
+		err = meta.AddLogMetaItem(v.Name, v.Type.String())
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("Create Log entity %s successfully", logMeta.Name), nil
 }
 
 func (l *Query) Query_log(ctx context.Context) ([]schema.LogItem, error) {

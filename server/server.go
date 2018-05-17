@@ -21,8 +21,9 @@ import (
 	"context"
 	"github.com/hanahmily/banyandb/config"
 	"github.com/hanahmily/banyandb/log"
-	"os"
 	"github.com/hanahmily/banyandb/query"
+	"github.com/hanahmily/banyandb/storage"
+	"os"
 )
 
 type Endpoint interface {
@@ -31,19 +32,20 @@ type Endpoint interface {
 }
 
 type Server struct {
-	signals  chan os.Signal
-	stopChan chan bool
-	config   *config.ServerConfig
+	signals   chan os.Signal
+	stopChan  chan bool
+	config    *config.ServerConfig
 	endpoints []Endpoint
+	storage   *storage.Storage
 }
 
-func NewServer(config *config.ServerConfig) *Server {
+func NewServer(config *config.ServerConfig, storage *storage.Storage) *Server {
 	server := new(Server)
 	server.signals = make(chan os.Signal, 1)
 	server.stopChan = make(chan bool, 1)
 	server.config = config
+	server.storage = storage
 	server.endpoints = append(server.endpoints, &query.Query{})
-
 	return server
 }
 
