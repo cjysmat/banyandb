@@ -2,40 +2,35 @@ syntax = "proto3";
 
 package entry;
 
+import "google/protobuf/timestamp.proto";
+
 // Interface exported by the server.
 service LogService {
 
-    rpc WriteLog(stream Data) returns (stream Summary) {}
+    //Write Log data into server
+    rpc WriteLog(stream LogData) returns (stream Summary) {}
 
 }
 
-message DBMeta {
-
+message LogData {
+    uint64 id = 1;
+    repeated LogItem items = 2;
+    google.protobuf.Timestamp timestamp = 3;
 }
 
-message Item {
+message LogItem {
     string name = 1;
-    ItemType type = 2;
-    enum ItemType {
-        INT = 0;
-        STRING = 1;
-        BOOL = 2;
-        BYTES = 3;
+    oneof content_oneof {
+        string item_str = 11;
+        int32 item_int = 12;
+        int64 item_long = 13;
+        float item_float = 14;
+        double item_double = 15;
+        bool item_bool = 16;
+        bytes item_bytes = 17;
     }
 }
 
-message Result {
-
-}
-
-message Data {
-
-}
-
 message Summary {
-
-}
-
-message Q {
-
+    uint64 offset = 1;
 }

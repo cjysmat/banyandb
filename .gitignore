@@ -20,3 +20,4 @@
 .DS_Store
 /vendor*
 *_gen.go
+*.pb.go
