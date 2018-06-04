@@ -15,34 +15,24 @@
  * limitations under the License.
  */
 
-package config
+package grpc
 
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
-	Dir    string        `description:"Storage directory"`
+import (
+	"io"
+)
+
+type Logger struct {
+
 }
 
-type ServerConfig struct {
-	EntryAddr string `description:"Entry endpoint ip address"`
-	EntryPort int    `description:"Entry endpoint port"`
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
-}
-
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-			EntryAddr: "",
-			EntryPort: 9123,
-		},
-		Dir: "/tmp/banyandb",
-	}
-}
-
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
+func (l *Logger) WriteLog(stream LogService_WriteLogServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
 	}
 }

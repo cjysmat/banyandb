@@ -15,34 +15,39 @@
  * limitations under the License.
  */
 
-package config
+package entry
 
-type BanyanConfig struct {
-	Server *ServerConfig `description:"Server configuration"`
-	Dir    string        `description:"Storage directory"`
+import (
+	"github.com/hanahmily/banyandb/config"
+	"net"
+	"fmt"
+	"google.golang.org/grpc"
+	pb "github.com/hanahmily/banyandb/entry/grpc"
+	"github.com/hanahmily/banyandb/log"
+)
+
+func NewEntry() {
+
 }
 
-type ServerConfig struct {
-	EntryAddr string `description:"Entry endpoint ip address"`
-	EntryPort int    `description:"Entry endpoint port"`
-	QueryAddr string `description:"Query endpoint ip address"`
-	QueryPort int    `description:"Query endpoint port"`
+type Entry struct {
+	s *grpc.Server
 }
 
-func NewBanyanConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{
-			QueryAddr: "",
-			QueryPort: 9122,
-			EntryAddr: "",
-			EntryPort: 9123,
-		},
-		Dir: "/tmp/banyandb",
+func (e *Entry) Start(config *config.ServerConfig) error {
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", config.EntryAddr, config.EntryPort))
+	if err != nil {
+		return err
 	}
+	e.s = grpc.NewServer()
+	pb.RegisterLogServiceServer(e.s, &pb.Logger{})
+	go func() {
+		log.Error(e.s.Serve(lis))
+	}()
+	return nil
 }
 
-func NewBanyanDefaultPointersConfig() *BanyanConfig {
-	return &BanyanConfig{
-		Server: &ServerConfig{},
-	}
+func (e *Entry) Stop() error {
+	e.s.GracefulStop()
+	return nil
 }
