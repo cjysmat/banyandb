@@ -39,8 +39,7 @@ func (l *Query) Mutation_createLogEntity(ctx context.Context, logMeta schema.Log
 			break
 		}
 	}
-	err = meta.Finish(err)
-	return fmt.Sprintf("Create Log entity %s successfully", logMeta.Name), err
+	return fmt.Sprintf("Create Log entity %s successfully", logMeta.Name), meta.Finish(err)
 }
 
 func (l *Query) Query_log(ctx context.Context) ([]schema.LogItem, error) {

@@ -96,6 +96,7 @@ func (lm *LogMeta) AddLogMetaItem(itemName string, itemType string) error {
 }
 
 func (lm *LogMeta) Finish(err error) error {
+	defer lm.txn.Discard()
 	if err != nil {
 		lm.txn.Discard()
 		return err
